@@ -18,7 +18,9 @@ Laat zien hoe je herbruikbare modules bouwt, remote state beheert en veilige CI/
 project2/
 ├── modules/ # Herbruikbare Terraform modules
 ├── envs/
-│ ├── dev/ # Dev omgeving
-│ └── prod/ # Prod omgeving
+│ 
+├── dev/ # Dev omgeving
+│ 
+└── prod/ # Prod omgeving
 ├── .gitignore
 └── README.md
