@@ -9,4 +9,13 @@ variable "vnet_address_space" {
     default = ["10.0.0.0/16"]
   }
 
- 
+ variable "subnet_prefixes" {
+    type = list(string)
+    description = "address prefixes for the subnet"
+    default = ["10.0.1.0/24"]
+ }
+
+variable "subnet_name" {
+    type = string
+    description = "name of the subnet"
+}
