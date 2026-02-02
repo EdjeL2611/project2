@@ -17,3 +17,4 @@ data "azurerm_storage_account" "Projecttweesa" {
   name                = "projecttweesa"
   resource_group_name = "project-twee"
 }
+
