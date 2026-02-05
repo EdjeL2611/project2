@@ -1,4 +1,4 @@
- variable "resource_group_name" {
+variable "resource_group_name" {
   type        = string
   description = "name of the resource group"
 }
@@ -35,3 +35,44 @@ variable "subnet_name" {
   description = "name of the subnet"
 }
 
+variable "nsg_name" {
+  type        = string
+  description = "The name of the Network Security Group"
+}
+
+variable "security_rule" {
+  description = "List of security rules to be applied to the NSG"
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  }))
+  default = []
+
+}
+
+variable "dns_zone_name" {
+  type        = string
+  description = "name of the dsn zone"
+}
+
+variable "dns_link_name" {
+  type        = string
+  description = "name of the dns virtual network link"
+}
+
+variable "private_endpoint_name" {
+  type        = string
+  description = "The name of the private endpoint."
+}
+
+variable "private_service_connection_name" {
+  type        = string
+  description = "The name of the private service connection."
+}
