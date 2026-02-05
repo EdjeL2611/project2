@@ -58,3 +58,24 @@ variable "security_rule" {
   default = []
 
 }
+
+variable "dns_zone_name" {
+  type        = string
+  description = "name of the dsn zone"
+}
+
+variable "dns_link_name" {
+  type        = string
+  description = "name of the dns virtual network link"
+}
+
+variable "private_endpoint_name" {
+  type        = string
+  description = "The name of the private endpoint."
+}
+
+variable "private_service_connection_name" {
+  type        = string
+  description = "The name of the private service connection."
+}
+
