@@ -27,14 +27,16 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns-link" {
   name                  = var.dns_link_name
   resource_group_name   = azurerm_resource_group.projecttwee.name
   private_dns_zone_name = azurerm_private_dns_zone.dns_zone.name
-  virtual_network_id = module.network.virtual_network_id
+  virtual_network_id    = module.network.virtual_network_id
   registration_enabled  = false
 }
 
 resource "azurerm_storage_account_network_rules" "projecttweesa_network_rules" {
-storage_account_id = data.azurerm_storage_account.Projecttweesa.id
+  storage_account_id = data.azurerm_storage_account.Projecttweesa.id
 
-  default_action             = "Deny"  
-  virtual_network_subnet_ids = [module.network.subnet_ids[0]]  
-  bypass                     = ["AzureServices"]  
+  default_action             = "Deny"
+  virtual_network_subnet_ids = [module.network.subnet_ids[0]]
+  bypass                     = ["AzureServices"]
 }
+
+data "azurerm_client_config" "current" {}
