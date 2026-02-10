@@ -3,7 +3,12 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy    = true
+      recover_soft_deleted_key_vaults = true
+    }
+  }
   subscription_id = var.subscription_id
 }
 
@@ -16,15 +21,8 @@ data "azurerm_storage_account" "Projecttweesa" {
   resource_group_name = data.azurerm_resource_group.projecttwee.name
 }
 
-resource "azurerm_private_dns_zone" "dns_zone" {
-  name                = var.dns_zone_name
-  resource_group_name = data.azurerm_resource_group.projecttwee.name
-}
+data "azurerm_client_config" "current" {}
 
-resource "azurerm_private_dns_zone_virtual_network_link" "dns-link" {
-  name                  = var.dns_link_name
-  resource_group_name   = data.azurerm_resource_group.projecttwee.name
-  private_dns_zone_name = azurerm_private_dns_zone.dns_zone.name
-  virtual_network_id = module.network.virtual_network_id
-  registration_enabled  = false
-}
+
+
+
