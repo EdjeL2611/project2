@@ -9,6 +9,7 @@ variable "vnet_address_space" {
     default = ["10.0.0.0/16"]
   }
 
+
  variable "subnet_prefixes" {
     type = list(string)
     description = "address prefixes for the subnet"
@@ -16,6 +17,17 @@ variable "vnet_address_space" {
  }
 
 variable "subnet_name" {
-    type = string
+    type = list(string)
     description = "name of the subnet"
+}
+
+variable "resource_group_name" {
+    type = string
+    description = "name of the resource group"
+}
+
+variable "location" {
+  type = string
+  description = "location of the resource group"
+  default = "westeurope"
 }

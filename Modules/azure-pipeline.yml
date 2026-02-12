@@ -1,0 +1,81 @@
+
+trigger: none
+
+parameters:
+- name: environment
+  type: string
+  default: dev
+  values:
+    - dev
+    - prod
+
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+   - group: Terraform-${{ parameters.environment }}
+
+
+stages:
+  - stage: tfvalidate
+    jobs:
+        - job: validate
+          continueOnError: false
+          steps:
+            - task: TerraformInstaller@1
+              displayName: tfinstall
+              inputs:
+                terraformVersion: 'latest'
+            - task: TerraformTask@5
+              displayName: init
+              inputs:
+                provider: 'azurerm'
+                command: 'init'
+                backendServiceArm: 'Terraform-connection'
+                backendAzureRmResourceGroupName: '$(bkstrgrg)'
+                backendAzureRmStorageAccountName: '$(bkstrg)'
+                backendAzureRmContainerName: '$(bkcontainer)'
+                backendAzureRmKey: '$(bkstrgkey)'
+            - task: TerraformTask@5
+              displayName: validate
+              inputs:
+                provider: 'azurerm'
+                command: 'validate'
+  - stage: tfdeploy
+    condition: succeeded('tfvalidate')
+    dependsOn: tfvalidate
+    jobs:
+      - job: apply
+        steps: 
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendAzureRmResourceGroupName: '$(bkstrgrg)'
+              backendAzureRmStorageAccountName: '$(bkstrg)'
+              backendAzureRmContainerName: '$(bkcontainer)'
+              backendAzureRmKey: '$(bkstrgkey)'
+          - task: TerraformTask@5
+            displayName: plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'Terraform-connection'
+
+      - ${{ if eq(parameters.environment, 'prod') }}:
+          - task: ManualValidation@1
+            inputs:
+              notifyUsers: 'edjetestmiddelland@outlook.com'
+              instructions: 'Goedkeuring nodig voor prod deployment'
+              timeout: '43200'
+          - task: TerraformTask@5
+            displayName: apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'Terraform-connection'
+
