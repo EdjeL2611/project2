@@ -1,5 +1,5 @@
 module "nsg" {
-  source = "../../modules/nsg"
+  source = "${path.root}../../modules/nsg"
 
   nsg_name      = var.nsg_name
   security_rule = var.security_rule

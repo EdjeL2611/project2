@@ -1,5 +1,5 @@
 module "private-endpoint" {
-  source = "../../modules/private-endpoint"
+  source = "${path.root}../../modules/private-endpoint"
 
   resource_group_name             = var.resource_group_name
   location                        = var.location

@@ -1,5 +1,5 @@
 module "keyvault" {
-  source = "../../modules/keyvault"
+  source = "${path.root}../../modules/keyvault"
 
   keyvault_name              = var.keyvault_name
   location                   = var.location
