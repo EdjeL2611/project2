@@ -27,6 +27,8 @@ stages:
         - job: validate
           continueOnError: false
           steps:
+            - checkout: self
+              clean: true
             - task: TerraformInstaller@1
               displayName: tfinstall
               inputs:
@@ -73,6 +75,7 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/envs/dev'
               environmentServiceNameAzureRM: 'Terraform-connection'
+              
           - task: TerraformTask@5
             displayName: apply
             inputs:
@@ -80,4 +83,5 @@ stages:
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/envs/dev'
               environmentServiceNameAzureRM: 'Terraform-connection'
+              
 
