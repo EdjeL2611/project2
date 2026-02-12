@@ -5,14 +5,25 @@
 
 trigger: none
 
+parameters:
+- name: environment
+  type: string
+  default: dev
+  values:
+    - dev
+    - prod
+
+
 pool:
   vmImage: ubuntu-latest
 
 variables:
   bkstrgrg: 'project-twee'
   bkstrg: 'projecttweesa'
-  bkcontainer: 'container-dev'
-  bkstrgkey: 'dev.terraform.tfstate'
+  bkcontainer: ${{ if eq(parameters.environment, 'dev') }}: 'container-dev'
+  bkstrgkey: ${{ if eq(parameters.environment, 'dev') }}: 'dev.terraform.tfstate'
+  bkcontainer: ${{ if eq(parameters.environment, 'prod') }}: 'container-prod'
+  bkstrgkey: ${{ if eq(parameters.environment, 'prod') }}: 'prod.terraform.tfstate'
 
 stages:
   - stage: tfvalidate
@@ -62,9 +73,17 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'Terraform-connection'
+
+        -${{ if eq(parameters.environment, 'prod') }}:
+          - task: ManualValidation@1
+            inputs:
+              notifyUsers: 'edjetestmiddelland@outlook.com'
+              instructions: 'Goedkeuring nodig voor prod deployment'
+              timeout: '43200'
           - task: TerraformTask@5
             displayName: apply
             inputs:
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: 'Terraform-connection'
+              autoApprove: ${{ if eq(parameters.environment, 'dev') }}: true
