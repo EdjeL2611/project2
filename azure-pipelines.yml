@@ -15,7 +15,7 @@ parameters:
 
 
 pool:
-  vmImage: ubuntu-latest
+  name: Selfhosted
 
 variables:
    - group: Terraform-${{ parameters.environment }}
