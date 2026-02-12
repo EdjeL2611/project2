@@ -1,5 +1,5 @@
 module "network" {
-  source = "${path.root}../../modules/network"
+  source = "../../modules/network"
 
   vnet_address_space = var.vnet_address_space
   vnet_name          = var.vnet_name
