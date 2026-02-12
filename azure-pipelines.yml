@@ -18,12 +18,8 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  bkstrgrg: 'project-twee'
-  bkstrg: 'projecttweesa'
-  bkcontainer: ${{ if eq(parameters.environment, 'dev') }}: 'container-dev'
-  bkstrgkey: ${{ if eq(parameters.environment, 'dev') }}: 'dev.terraform.tfstate'
-  bkcontainer: ${{ if eq(parameters.environment, 'prod') }}: 'container-prod'
-  bkstrgkey: ${{ if eq(parameters.environment, 'prod') }}: 'prod.terraform.tfstate'
+   - group: Terraform-${{ parameters.environment }}
+
 
 stages:
   - stage: tfvalidate
@@ -74,7 +70,7 @@ stages:
               command: 'plan'
               environmentServiceNameAzureRM: 'Terraform-connection'
 
-        -${{ if eq(parameters.environment, 'prod') }}:
+      - ${{ if eq(parameters.environment, 'prod') }}:
           - task: ManualValidation@1
             inputs:
               notifyUsers: 'edjetestmiddelland@outlook.com'
@@ -86,4 +82,12 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: 'Terraform-connection'
-              autoApprove: ${{ if eq(parameters.environment, 'dev') }}: true
+
+      - ${{ if eq(parameters.environment, 'dev') }}:
+        - task: TerraformTask@5
+          displayName: apply dev
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            environmentServiceNameAzureRM: 'Terraform-connection'
+            autoApprove: true
