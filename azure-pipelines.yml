@@ -47,7 +47,7 @@ stages:
                 provider: 'azurerm'
                 command: 'validate'
   - stage: tfdeploy
-    condition: succeed('tfvalidate')
+    condition: succeeded('tfvalidate')
     dependsOn: tfvalidate
     jobs:
       - job: apply
@@ -83,11 +83,3 @@ stages:
               command: 'apply'
               environmentServiceNameAzureRM: 'Terraform-connection'
 
-      - ${{ if eq(parameters.environment, 'dev') }}:
-        - task: TerraformTask@5
-          displayName: apply dev
-          inputs:
-            provider: 'azurerm'
-            command: 'apply'
-            environmentServiceNameAzureRM: 'Terraform-connection'
-            autoApprove: true
