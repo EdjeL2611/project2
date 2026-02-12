@@ -18,7 +18,7 @@ pool:
   name: Selfhosted
 
 variables:
-   - group: Terraform-${{ parameters.environment }}
+   - group: Terraform-dev
 
 
 stages:
@@ -70,13 +70,6 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'Terraform-connection'
-
-      - ${{ if eq(parameters.environment, 'prod') }}:
-          - task: ManualValidation@1
-            inputs:
-              notifyUsers: 'edjetestmiddelland@outlook.com'
-              instructions: 'Goedkeuring nodig voor prod deployment'
-              timeout: '43200'
           - task: TerraformTask@5
             displayName: apply
             inputs:
