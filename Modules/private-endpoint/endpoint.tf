@@ -7,7 +7,11 @@ resource "azurerm_private_endpoint" "private_endpoint" {
   private_service_connection {
     name                           = var.private_service_connection_name
     private_connection_resource_id = var.private_connection_resource_id
+<<<<<<< HEAD
     subresource_names = [vault]
+=======
+    subresource_names = ["vault"]
+>>>>>>> d175b1d (adjust the endpoint module)
     is_manual_connection           = false
   }
 
