@@ -44,6 +44,11 @@ stages:
                 backendAzureRmStorageAccountName: '$(bkstrg)'
                 backendAzureRmContainerName: '$(bkcontainer)'
                 backendAzureRmKey: '$(bkstrgkey)'
+            - task: DownloadSecureFile@1
+              name: tfvars
+              displayName: download tfvars
+              inputs:
+                secureFile: 'dev-terraform.tfvars'
             - task: TerraformTask@5
               displayName: validate
               inputs:
@@ -75,6 +80,7 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/envs/dev'
               environmentServiceNameAzureRM: 'Terraform-connection'
+              commandOptions: '-var-file=$(tfvars.secureFilePath)'
               
           - task: TerraformTask@5
             displayName: apply
@@ -83,5 +89,6 @@ stages:
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/envs/dev'
               environmentServiceNameAzureRM: 'Terraform-connection'
+              commandOptions: '-var-file=$(tfvars.secureFilePath) -auto-approve'
               
 
