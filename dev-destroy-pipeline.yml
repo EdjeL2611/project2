@@ -1,0 +1,78 @@
+ 
+
+trigger: none
+
+parameters:
+  - name: environment
+    type: string
+    default: dev
+    values:
+      - dev
+      - prod
+
+
+pool: Selfhosted
+
+variables:
+    - group: terraform-dev
+
+
+stages:
+  - stage: tfvalidate
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+          - checkout: self
+            clean: true
+          - task: TerraformInstaller@1
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTask@5
+            displayName: init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'Terraform-connection'
+              backendAzureRmResourceGroupName: 'project-twee'
+              backendAzureRmStorageAccountName: 'projecttweesa'
+              backendAzureRmContainerName: 'container-dev'
+              backendAzureRmKey: 'dev.terraform.tfstate'
+          - task: TerraformTask@5
+            displayName: validate
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+  - stage: tfdestroy
+    dependsOn: tfvalidate
+    condition: succeeded('tfvalidate')
+    jobs:
+      - job: destroy
+        steps:
+          - task: TerraformInstaller@1
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/envs/dev'
+              backendServiceArm: 'Terraform-connection'
+              backendAzureRmResourceGroupName: 'project-twee'
+              backendAzureRmStorageAccountName: 'projecttweesa'
+              backendAzureRmContainerName: 'container-dev'
+              backendAzureRmKey: 'dev.terraform.tfstate'
+          - task: DownloadSecureFile@1
+            name: tfvars
+            displayName: download tfvars
+            inputs:
+              secureFile: 'dev-terraform.tfvars'
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'destroy'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/envs/dev'
+              environmentServiceNameAzureRM: 'Terraform-connection'
+              commandOptions: '-var-file=$(tfvars.secureFilePath) -auto-approve'
